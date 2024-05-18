@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hotel Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 1.2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        .room-info {
+            font-weight: bold;
+        }
+
+        .room-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .room-item {
+            margin-bottom: 10px;
+        }
+         .searched-dates {
+             position: absolute;
+             top: 20px;
+             right: 20px;
+             font-size: 1rem;
+             font-weight: bold;
+         }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Hotel Details</h1>
+    <div class="searched-dates" th:if="${startDatePrev != null && endDatePrev != null}">
+        Searched Dates: <span th:text="${startDatePrev} + ' - ' + ${endDatePrev}"></span>
+    </div>
+    <div class="card">
+        <div class="room-info">Hotel ID: <span th:text="${hotel.id}"></span></div>
+        <div class="room-info">Hotel Name: <span th:text="${hotel.name}"></span></div>
+        <div class="room-info">Latitude: <span th:text="${hotel.latitude}"></span></div>
+        <div class="room-info">Longitude: <span th:text="${hotel.longitude}"></span></div>
+    </div>
+
+    <h2>Rooms</h2>
+    <div th:if="${hotel.rooms}">
+        <ul class="room-list">
+            <li th:each="room : ${hotel.rooms}" class="room-item">
+                <div class="card">
+                    <div class="room-info">Room ID: <span th:text="${room.id}"></span></div>
+                    <div class="room-info">Room Type: <span th:text="${room.type}"></span></div>
+                    <div class="room-info">Room Number: <span th:text="${room.roomNumber}"></span></div>
+                    <div class="room-info">Price: <span th:text="${room.price}"></span></div>
+                    <p th:if="${room.free}" class="text-success">The room is available</p>
+                    <form th:if="${room.free}" th:action="@{/hotels/reserveRoom(hotelId=${hotel.id}, roomId=${room.id}, startDate=${startDatePrev}, endDate=${endDatePrev})}" method="post">
+                        <button type="submit" class="btn btn-primary reservation-button">Make Reservation</button>
+                    </form>
+
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div th:unless="${hotel.rooms}">
+        <p>No rooms available for this hotel.</p>
+    </div>
+</div>
+
+</body>
+</html>

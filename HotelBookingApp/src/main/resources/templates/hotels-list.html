@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Include Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<main class="flex-shrink-0">
+    <section layout:fragment="body" class="py-5">
+        <div class="container px-5 my-5">
+            <div class="text-center mb-5">
+                <h1 class="fw-bolder">Hotel List</h1>
+            </div>
+            <!-- Search Button -->
+            <!-- Search Button -->
+            <!--<section layout:fragment="body" class="py-5"> -->
+            <div class="container">
+                <form id="searchForm" role="form" method="get" action="/hotels/search">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="searchRange">Search Range (in kilometers)</label>
+                            <input type="number" class="form-control" id="searchRange" name="searchRange" placeholder="Enter range">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="startDate">Start Date</label>
+                            <input class="form-control" id="startDate" name="startDate" placeholder="Start Date" th:value="${startDatePrev != null ? startDatePrev : ''}" type="date">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="endDate">End Date</label>
+                            <input class="form-control" id="endDate" name="endDate" placeholder="End Date" th:value="${endDatePrev != null ? endDatePrev : ''}" type="date">
+                        </div>
+                        <!-- Hidden input fields to store latitude and longitude -->
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+
+            </div>
+            <!--</section>-->
+
+
+            <div class="row gx-5">
+                <!-- Iterate over each hotel -->
+                <div th:each="hotel : ${hotels}" class="col-lg-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h2 class="card-title" th:text="${hotel.name}"></h2>
+                            <!--<p class="card-text">Location: <span th:text="${hotel.latitude}, ${hotel.longitude}" class="text-muted"></span></p>-->
+                            <p th:if="${hotel.hasAvailableRooms}" class="text-success">Has available rooms</p>
+                            <!-- Dropdown for room selection -->
+                            <a th:href="@{/hotels/{hotelId}/details(hotelId=${hotel.id}, startDate=${startDatePrev}, endDate=${endDatePrev})}" class="btn btn-primary">View</a>
+
+
+
+
+                            <div class="dropdown mb-3">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Select Room
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <!-- Iterate over each room in the hotel -->
+                                    <a th:each="room : ${hotel.rooms}" class="dropdown-item" th:href="@{'/room/' + ${room.id}}">
+                                        Room <span th:text="${room.roomNumber}"></span> - Price: <span th:text="${room.price}"></span>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- Add other hotel details as needed -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+<!-- Include Bootstrap JS for dropdown functionality -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- JavaScript for Search Button -->
+<script>
+    $(document).ready(function () {
+        $('#searchBtn').click(function () {
+            getLocation(); // Call getLocation to get geolocation
+        });
+
+        // Update hidden input fields when date inputs change
+        $('#startDate, #endDate').change(function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            $('#hiddenStartDate').val(startDate);
+            $('#hiddenEndDate').val(endDate);
+        });
+    });
+
+
+</script>
+
+
+</body>
+</html>
